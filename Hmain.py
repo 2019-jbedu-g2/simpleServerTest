@@ -6,12 +6,9 @@ class ncbot_RequestHandler(BaseHTTPRequestHandler):
     '''
     def do_POST(self):
         print("path: %sn" % self.path)
-
         o = urllib.parse.urlparse(self.path)
         params = urllib.parse.parse_qs(o.query)
-
         print(params)
-
         self.wfile.write(bytes("Hello Client" , "utf8"))
         return
 '''
@@ -32,14 +29,14 @@ class ncbot_RequestHandler(BaseHTTPRequestHandler):
             if len(data) <= 2 or data[2] == "":
                 self.store()
             else:
-                self.storeone()
+                self.storeone(data[2])
         elif '/waiting' in self.path:
             data = self.path.split("/")
-            if len(data) == 2 or data[2] =="":
+            if len(data) == 3:
                 self.waiting()
-            elif len(data) == 3 or data[3] =="":
+            elif len(data) == 4:
                 self.handover()
-            elif len(data) == 4 or data[4] =="":
+            elif len(data) == 5 :
                 self.checkmyqueue()
         elif '/account' in self.path:
             data = self.path.split("/")
@@ -49,8 +46,8 @@ class ncbot_RequestHandler(BaseHTTPRequestHandler):
                 self.confirm()
             elif data[2] == 'cancel':
                 self.cancel()
-        else:
-            self.reponse_404_not_found()
+#        else:
+#            self.reponse_404_not_found()
         # if self.path == '':
         #     self.blank()
         # elif self.path == '/hello':
@@ -74,8 +71,18 @@ class ncbot_RequestHandler(BaseHTTPRequestHandler):
     def store(self):
         self.response(200,'store')
     # 가게 단일정보
-    def storeone(self):
-        self.response(200, 'storeone')
+    def storeone(self, a):
+        b=""
+        if a == "202151745":
+            b = '{"storenum": "202151745","storename": "매화반점","category": "중식","latitude": "37.538381","longitude": "127.068479","intro": "탕수육과 양꼬치로 유명한 중국요리 전문점입니다. 저녁시간에는 줄을 서서 기다려 먹어야 할 만큼 인기가 많습니다. 이 곳에 메인 요리인 양꼬치는 한 번 구워서 나오기 때문에 연하고 부드러운 최상의 상태로 맛을 볼 수 있습니다. 또한 식감이 매우 좋은 가지 튀김도 인기 메뉴입니다.","menu": "깐풍기:12000/깐쇼새우:12000/양갈비:13000/매화식가지볶음:8000/매화식탕수육:10000/양꼬치:9000/꿔바로우:8000/가지볶음:8000","inform": "주소 서울특별시 광진구 자양4동 동일로18길 105 / 전화번호 02-498-1939 / OPEN 12:00 CLOSE 01: 00", "latencytime": "30"}'
+        elif a == '204684235':
+            b = '{"storenum": "204684235","storename": "페스타마레","category": "이태리양식","latitude": "37.539480","longitude": "127.069581","intro": "Hand made 이탈리안 피자 & 스파게티 전문 페스타마레 입니다.","menu": "빠네까르보나라:10000/빠네씨푸드크림:11000/빠네크랩:11000/빠네포르마지오:11000/빠네맥앤치즈:11000/봉골레비앙코:7500/알리오올리오:8000","inform": "주소 서울특별시 광진구 자양4동 2-14 / 전화번호 02-497-9982 / OPEN 11:30 CLOSE20:00","latencytime": "25"}'
+        elif
+            
+        self.response(200, b)
+       
+            
+        self.response(200, b)
     #줄서기
     def waiting(self):
         self.response(200,'waiting')
@@ -108,15 +115,16 @@ class ncbot_RequestHandler(BaseHTTPRequestHandler):
     #     self.response(200,'8802342034956')
     # def barcode2(self):
     #     self.response(200,'8809683905938')
-    def response_404_not_found(self):
-        self.response(404,'요청하신 문서를 찾을 수 없습니다.')
+    
+#    def response_404_not_found(self):
+#        self.response(404,'요청하신 문서를 찾을 수 없습니다.')
     def response(self,status_code,body):
         #상태코드 전송
         self.send_response(status_code)
 
         #헤더 전송
-        #self.send_header('Content-type','text/plain; charset=utf-8')
-        self.send_header('Content-type', 'application/json')
+        self.send_header('Content-type','text/plain; charset=utf-8')
+       # self.send_header('Content-type', 'application/json')
 
         self.end_headers()
 
@@ -126,7 +134,7 @@ class ncbot_RequestHandler(BaseHTTPRequestHandler):
 # 테스트입니다
 def run():
     print('Starting server')
-    server_address = ('192.168.0.9', 8000)
+    server_address = ('192.168.0.8', 8000)
     httpd = HTTPServer(server_address, ncbot_RequestHandler)
 
     print("Running the server")
